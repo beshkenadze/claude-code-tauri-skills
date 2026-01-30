@@ -88,7 +88,7 @@ This security analysis was performed on the Tauri Skills repository, which conta
 #### Low Priority
 
 9. **Permission Merging Behavior**
-   - **Issue**: How capabilities merge when windows have multiple grants is underdocumented
+   - **Issue**: How capabilities merge when windows have multiple grants is under-documented
    - **Location**: `tauri-capabilities/SKILL.md`
    - **Recommendation**: Add explicit examples of merging behavior
 

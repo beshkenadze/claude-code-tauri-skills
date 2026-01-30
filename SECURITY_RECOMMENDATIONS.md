@@ -339,9 +339,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
       
       - name: Audit Rust Dependencies
         run: |
@@ -552,7 +550,7 @@ async fn check_update(app: tauri::AppHandle) -> Result<(), String> {
       "signature": "BASE64_SIGNATURE_HERE"
     }
   },
-  "notes": "Security update: Patches CVE-2024-XXXXX"
+  "notes": "Security update: Patches CVE-YYYY-NNNNN"
 }
 ```
 
@@ -663,20 +661,35 @@ For critical security updates:
 4. **Verification**: Extra testing for security updates
 
 ```rust
+use tauri::updater::UpdaterBuilder;
+
 #[tauri::command]
 async fn check_critical_update(app: tauri::AppHandle) -> Result<bool, String> {
     // Check if current version has known critical vulnerability
     let current = app.package_info().version.clone();
     
+    // TODO: Implement your vulnerability checking logic
+    // Example: check against a list of known vulnerable versions
     if is_critically_vulnerable(&current) {
         // Force update check
-        let update = updater::check().await?;
+        let updater = UpdaterBuilder::new(&app)
+            .build()
+            .map_err(|e| e.to_string())?;
+            
+        let update = updater.check().await.map_err(|e| e.to_string())?;
         if update.is_some() {
             return Ok(true); // Signal critical update available
         }
     }
     
     Ok(false)
+}
+
+// Helper function - implement based on your vulnerability tracking
+fn is_critically_vulnerable(version: &tauri::Version) -> bool {
+    // Example: check if version is in list of known vulnerable versions
+    // This should be implemented based on your security advisory system
+    false
 }
 ```
 
@@ -690,7 +703,6 @@ Update security requires:
 5. **Monitoring and logging**
 
 The weakest link in your update chain determines your security posture.
-```
 ```
 
 ## Summary
